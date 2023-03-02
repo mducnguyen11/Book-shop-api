@@ -2,12 +2,12 @@ import express from 'express';
 import dotenv from 'dotenv';
 import conectDatabase from './config/dbconfig.js';
 import DataRoute from './ImportDataRoute.js';
-import BookRoute from './routes/BookController.js';
+import BookRoute from './controllers/BookController.js';
 import { errorHandler } from './midleware/Error.js';
-import AuthRoute from './routes/AuthController.js';
+import AuthRoute from './controllers/AuthController.js';
 import bodyParser from 'body-parser';
-import CartRoute from './routes/CartController.js';
-import OrderRoute from './routes/OrderController.js';
+import CartRoute from './controllers/CartController.js';
+import OrderRoute from './controllers/OrderController.js';
 
 dotenv.config();
 

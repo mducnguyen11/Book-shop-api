@@ -55,6 +55,45 @@ CartController.post('/save', async (req, res) => {
   }
 });
 
+CartController.post('/add', async (req, res) => {
+  try {
+    const { bookId, qty } = req.body;
+    const token = req.headers['authorization'];
+    if (!token) {
+      return res.sendStatus(401); // Unauthorized
+    }
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    const userId = decoded.id;
+    const user = await UserModel.findById(userId);
+    const book = await BookModel.findById(bookId);
+    if (!book || !user) {
+      console.log(book, user);
+      return res.status(500).json({ message: 'Book error' });
+    }
+    const cartId = user.cartId;
+    const currentCart = await CartModel.findById(cartId);
+    const i = currentCart.cartItems.findIndex((item) => item.bookId.toString() === bookId);
+    if (i > -1) {
+      currentCart.cartItems[i].qty += qty;
+      currentCart.totalPrice += book.price * qty;
+    } else {
+      currentCart.cartItems.push({
+        bookImage: book.image,
+        bookName: book.title,
+        bookId: book._id,
+        qty: qty,
+        price: book.price,
+      });
+      currentCart.totalPrice += book.price * qty;
+    }
+    const updatedCart = await currentCart.save();
+    res.status(200).json(updatedCart);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 CartController.post('/clear', async (req, res) => {
   try {
     const token = req.headers['authorization'];
@@ -79,7 +118,7 @@ CartController.post('/clear', async (req, res) => {
   }
 });
 
-CartController.get('/get', async (req, res) => {
+CartController.get('/view', async (req, res) => {
   try {
     const token = req.headers['authorization'];
     if (!token) {
