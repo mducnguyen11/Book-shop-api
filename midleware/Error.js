@@ -12,7 +12,7 @@ const errorHandler = (req, res) => {
       stack: null,
     });
   }
-  return res.status(statusCode).json({
+  return res.status(500).json({
     message: 'Unhandle',
     stack: null,
   });
